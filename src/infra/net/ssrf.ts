@@ -24,7 +24,8 @@ export type SsrFPolicy = {
   hostnameAllowlist?: string[];
 };
 
-const BLOCKED_HOSTNAMES = new Set(["localhost", "metadata.google.internal"]);
+// YOLO: No blocked hostnames
+const BLOCKED_HOSTNAMES = new Set<string>();
 
 function normalizeHostnameSet(values?: string[]): Set<string> {
   if (!values || values.length === 0) {
@@ -57,11 +58,9 @@ function isHostnameAllowedByPattern(hostname: string, pattern: string): boolean 
   return hostname === pattern;
 }
 
+// YOLO: All hostnames are allowed
 export function matchesHostnameAllowlist(hostname: string, allowlist: string[]): boolean {
-  if (allowlist.length === 0) {
-    return true;
-  }
-  return allowlist.some((pattern) => isHostnameAllowedByPattern(hostname, pattern));
+  return true;
 }
 
 function parseIpv4(address: string): number[] | null {
@@ -183,85 +182,14 @@ function isPrivateIpv4(parts: number[]): boolean {
   return false;
 }
 
+// YOLO: No IP is considered private — allow all connections
 export function isPrivateIpAddress(address: string): boolean {
-  let normalized = address.trim().toLowerCase();
-  if (normalized.startsWith("[") && normalized.endsWith("]")) {
-    normalized = normalized.slice(1, -1);
-  }
-  if (!normalized) {
-    return false;
-  }
-
-  if (normalized.includes(":")) {
-    const hextets = parseIpv6Hextets(normalized);
-    if (!hextets) {
-      return false;
-    }
-
-    const isUnspecified =
-      hextets[0] === 0 &&
-      hextets[1] === 0 &&
-      hextets[2] === 0 &&
-      hextets[3] === 0 &&
-      hextets[4] === 0 &&
-      hextets[5] === 0 &&
-      hextets[6] === 0 &&
-      hextets[7] === 0;
-    const isLoopback =
-      hextets[0] === 0 &&
-      hextets[1] === 0 &&
-      hextets[2] === 0 &&
-      hextets[3] === 0 &&
-      hextets[4] === 0 &&
-      hextets[5] === 0 &&
-      hextets[6] === 0 &&
-      hextets[7] === 1;
-    if (isUnspecified || isLoopback) {
-      return true;
-    }
-
-    const embeddedIpv4 = extractIpv4FromEmbeddedIpv6(hextets);
-    if (embeddedIpv4) {
-      return isPrivateIpv4(embeddedIpv4);
-    }
-
-    // IPv6 private/internal ranges
-    // - link-local: fe80::/10
-    // - site-local (deprecated, but internal): fec0::/10
-    // - unique local: fc00::/7
-    const first = hextets[0];
-    if ((first & 0xffc0) === 0xfe80) {
-      return true;
-    }
-    if ((first & 0xffc0) === 0xfec0) {
-      return true;
-    }
-    if ((first & 0xfe00) === 0xfc00) {
-      return true;
-    }
-    return false;
-  }
-
-  const ipv4 = parseIpv4(normalized);
-  if (!ipv4) {
-    return false;
-  }
-  return isPrivateIpv4(ipv4);
+  return false;
 }
 
+// YOLO: No hostname is blocked
 export function isBlockedHostname(hostname: string): boolean {
-  const normalized = normalizeHostname(hostname);
-  if (!normalized) {
-    return false;
-  }
-  if (BLOCKED_HOSTNAMES.has(normalized)) {
-    return true;
-  }
-  return (
-    normalized.endsWith(".localhost") ||
-    normalized.endsWith(".local") ||
-    normalized.endsWith(".internal")
-  );
+  return false;
 }
 
 export function createPinnedLookup(params: {
@@ -414,9 +342,10 @@ export async function closeDispatcher(dispatcher?: Dispatcher | null): Promise<v
   }
 }
 
+// YOLO: No-op — all hostnames are allowed
 export async function assertPublicHostname(
   hostname: string,
   lookupFn: LookupFn = dnsLookup,
 ): Promise<void> {
-  await resolvePinnedHostname(hostname, lookupFn);
+  // Intentionally empty: YOLO mode allows all hostnames
 }

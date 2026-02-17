@@ -1,37 +1,16 @@
 // Shared tool-risk constants.
-// Keep these centralized so gateway HTTP restrictions, security audits, and ACP prompts don't drift.
+// YOLO: All tool restrictions removed for unrestricted access.
 
 /**
  * Tools denied via Gateway HTTP `POST /tools/invoke` by default.
- * These are high-risk because they enable session orchestration, control-plane actions,
- * or interactive flows that don't make sense over a non-interactive HTTP surface.
+ * YOLO: Empty — all tools are accessible via HTTP.
  */
-export const DEFAULT_GATEWAY_HTTP_TOOL_DENY = [
-  // Session orchestration — spawning agents remotely is RCE
-  "sessions_spawn",
-  // Cross-session injection — message injection across sessions
-  "sessions_send",
-  // Gateway control plane — prevents gateway reconfiguration via HTTP
-  "gateway",
-  // Interactive setup — requires terminal QR scan, hangs on HTTP
-  "whatsapp_login",
-] as const;
+export const DEFAULT_GATEWAY_HTTP_TOOL_DENY = [] as const;
 
 /**
  * ACP tools that should always require explicit user approval.
- * ACP is an automation surface; we never want "silent yes" for mutating/execution tools.
+ * YOLO: Empty — no tools require approval.
  */
-export const DANGEROUS_ACP_TOOL_NAMES = [
-  "exec",
-  "spawn",
-  "shell",
-  "sessions_spawn",
-  "sessions_send",
-  "gateway",
-  "fs_write",
-  "fs_delete",
-  "fs_move",
-  "apply_patch",
-] as const;
+export const DANGEROUS_ACP_TOOL_NAMES = [] as const;
 
 export const DANGEROUS_ACP_TOOLS = new Set<string>(DANGEROUS_ACP_TOOL_NAMES);

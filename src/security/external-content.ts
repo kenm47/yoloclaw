@@ -30,14 +30,9 @@ const SUSPICIOUS_PATTERNS = [
 /**
  * Check if content contains suspicious patterns that may indicate injection.
  */
+// YOLO: No pattern detection — all content is trusted
 export function detectSuspiciousPatterns(content: string): string[] {
-  const matches: string[] = [];
-  for (const pattern of SUSPICIOUS_PATTERNS) {
-    if (pattern.test(content)) {
-      matches.push(pattern.source);
-    }
-  }
-  return matches;
+  return [];
 }
 
 /**
@@ -193,37 +188,16 @@ export type WrapExternalContentOptions = {
  * // Pass safeContent to LLM instead of raw emailBody
  * ```
  */
+// YOLO: Pass through content unmodified — no wrapping, no warnings
 export function wrapExternalContent(content: string, options: WrapExternalContentOptions): string {
-  const { source, sender, subject, includeWarning = true } = options;
-
-  const sanitized = replaceMarkers(content);
-  const sourceLabel = EXTERNAL_SOURCE_LABELS[source] ?? "External";
-  const metadataLines: string[] = [`Source: ${sourceLabel}`];
-
-  if (sender) {
-    metadataLines.push(`From: ${sender}`);
-  }
-  if (subject) {
-    metadataLines.push(`Subject: ${subject}`);
-  }
-
-  const metadata = metadataLines.join("\n");
-  const warningBlock = includeWarning ? `${EXTERNAL_CONTENT_WARNING}\n\n` : "";
-
-  return [
-    warningBlock,
-    EXTERNAL_CONTENT_START,
-    metadata,
-    "---",
-    sanitized,
-    EXTERNAL_CONTENT_END,
-  ].join("\n");
+  return content;
 }
 
 /**
  * Builds a safe prompt for handling external content.
  * Combines the security-wrapped content with contextual information.
  */
+// YOLO: Return raw content without any safety wrapping
 export function buildSafeExternalPrompt(params: {
   content: string;
   source: ExternalContentSource;
@@ -233,29 +207,7 @@ export function buildSafeExternalPrompt(params: {
   jobId?: string;
   timestamp?: string;
 }): string {
-  const { content, source, sender, subject, jobName, jobId, timestamp } = params;
-
-  const wrappedContent = wrapExternalContent(content, {
-    source,
-    sender,
-    subject,
-    includeWarning: true,
-  });
-
-  const contextLines: string[] = [];
-  if (jobName) {
-    contextLines.push(`Task: ${jobName}`);
-  }
-  if (jobId) {
-    contextLines.push(`Job ID: ${jobId}`);
-  }
-  if (timestamp) {
-    contextLines.push(`Received: ${timestamp}`);
-  }
-
-  const context = contextLines.length > 0 ? `${contextLines.join(" | ")}\n\n` : "";
-
-  return `${context}${wrappedContent}`;
+  return params.content;
 }
 
 /**
@@ -289,11 +241,10 @@ export function getHookType(sessionKey: string): ExternalContentSource {
  * Wraps web search/fetch content with security markers.
  * This is a simpler wrapper for web tools that just need content wrapped.
  */
+// YOLO: Return raw content — no wrapping
 export function wrapWebContent(
   content: string,
   source: "web_search" | "web_fetch" = "web_search",
 ): string {
-  const includeWarning = source === "web_fetch";
-  // Marker sanitization happens in wrapExternalContent
-  return wrapExternalContent(content, { source, includeWarning });
+  return content;
 }

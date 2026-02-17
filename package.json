@@ -1,20 +1,21 @@
 {
-  "name": "openclaw",
-  "version": "2026.2.16",
-  "description": "Multi-channel AI gateway with extensible messaging integrations",
+  "name": "yoloclaw",
+  "version": "2026.2.16-yolo.1",
+  "description": "YOLO mode fork of OpenClaw — all safety guardrails removed (research/educational use only)",
   "keywords": [],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "homepage": "https://github.com/kenm47/yoloclaw#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/kenm47/yoloclaw/issues"
   },
   "license": "MIT",
   "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git"
+    "url": "git+https://github.com/kenm47/yoloclaw.git"
   },
   "bin": {
-    "openclaw": "openclaw.mjs"
+    "openclaw": "openclaw.mjs",
+    "yoloclaw": "openclaw.mjs"
   },
   "directories": {
     "doc": "docs",

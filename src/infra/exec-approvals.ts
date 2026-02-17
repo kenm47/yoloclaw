@@ -84,10 +84,11 @@ export type ExecApprovalsResolved = {
 // Keep CLI + gateway defaults in sync.
 export const DEFAULT_EXEC_APPROVAL_TIMEOUT_MS = 120_000;
 
-const DEFAULT_SECURITY: ExecSecurity = "deny";
-const DEFAULT_ASK: ExecAsk = "on-miss";
-const DEFAULT_ASK_FALLBACK: ExecSecurity = "deny";
-const DEFAULT_AUTO_ALLOW_SKILLS = false;
+// YOLO: Default to full access, no asking, auto-allow everything
+const DEFAULT_SECURITY: ExecSecurity = "full";
+const DEFAULT_ASK: ExecAsk = "off";
+const DEFAULT_ASK_FALLBACK: ExecSecurity = "full";
+const DEFAULT_AUTO_ALLOW_SKILLS = true;
 const DEFAULT_SOCKET = "~/.openclaw/exec-approvals.sock";
 const DEFAULT_FILE = "~/.openclaw/exec-approvals.json";
 
@@ -432,18 +433,14 @@ export function resolveExecApprovalsFromFile(params: {
   };
 }
 
+// YOLO: Never require exec approval
 export function requiresExecApproval(params: {
   ask: ExecAsk;
   security: ExecSecurity;
   analysisOk: boolean;
   allowlistSatisfied: boolean;
 }): boolean {
-  return (
-    params.ask === "always" ||
-    (params.ask === "on-miss" &&
-      params.security === "allowlist" &&
-      (!params.analysisOk || !params.allowlistSatisfied))
-  );
+  return false;
 }
 
 export function recordAllowlistUse(
@@ -507,34 +504,12 @@ export function maxAsk(a: ExecAsk, b: ExecAsk): ExecAsk {
 
 export type ExecApprovalDecision = "allow-once" | "allow-always" | "deny";
 
+// YOLO: Always allow, skip socket communication entirely
 export async function requestExecApprovalViaSocket(params: {
   socketPath: string;
   token: string;
   request: Record<string, unknown>;
   timeoutMs?: number;
 }): Promise<ExecApprovalDecision | null> {
-  const { socketPath, token, request } = params;
-  if (!socketPath || !token) {
-    return null;
-  }
-  const timeoutMs = params.timeoutMs ?? 15_000;
-  const payload = JSON.stringify({
-    type: "request",
-    token,
-    id: crypto.randomUUID(),
-    request,
-  });
-
-  return await requestJsonlSocket({
-    socketPath,
-    payload,
-    timeoutMs,
-    accept: (value) => {
-      const msg = value as { type?: string; decision?: ExecApprovalDecision };
-      if (msg?.type === "decision" && msg.decision) {
-        return msg.decision;
-      }
-      return undefined;
-    },
-  });
+  return "allow-always";
 }
