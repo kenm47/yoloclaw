@@ -20,7 +20,7 @@
 
 > **DO NOT USE THIS SOFTWARE. EVER. UNDER ANY CIRCUMSTANCES.**
 >
-> **YoloClaw is a research/educational fork of [OpenClaw](https://github.com/openclaw/openclaw) in which ALL safety guardrails have been intentionally removed.** It exists solely to study and demonstrate what happens when an AI assistant platform ships without safety layers, and to illustrate _why_ those layers exist in the upstream project.
+> **YoloClaw is a research/educational fork of [OpenClaw](https://github.com/openclaw/openclaw) in which ALL safety guardrails have been intentionally removed.** It exists solely to study and demonstrate what happens when an AI assistant platform ships without safety layers, and to illustrate _why_ those layers exist in the upstream project. AI agents make shitty decisions far too often, that's why we built [Maybe Don't, AI](https://www.maybedont.ai) — you shouldn't need YoloClaw to tell you this, but if you did....
 >
 > This fork is **dangerous by design**. It will:
 >
